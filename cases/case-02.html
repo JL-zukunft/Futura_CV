@@ -54,6 +54,42 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+    
+    /* Page Transition Animations */
+    body {
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    
+    body.page-enter {
+      animation: pageEnter 0.4s ease-out forwards;
+    }
+    
+    body.page-exit {
+      animation: pageExit 0.3s ease-in forwards;
+    }
+    
+    @keyframes pageEnter {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes pageExit {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
   </style>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head>
 <body class="bg-futura-bg text-futura-dark font-sans selection:bg-futura-green selection:text-white">
@@ -86,13 +122,32 @@
       <span class="material-symbols-outlined text-[12px] ml-1">expand_more</span>
 </p>
 <div class="group cursor-pointer">
-<div class="flex items-center space-x-2 border-l-2 border-futura-green pl-3">
-<span class="text-xs font-bold tracking-tight text-futura-dark">Retail UX Transformation</span>
-</div>
-<div class="mt-2 space-y-1.5 pl-3 opacity-40 group-hover:opacity-100 transition-opacity">
-<p class="text-[10px] text-futura-text-light hover:text-futura-green cursor-pointer">Sustainable Supply Chain</p>
-<p class="text-[10px] text-futura-text-light hover:text-futura-green cursor-pointer">Retail UX Transformation</p>
-</div>
+
+      <div class="pl-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+        <a href="case-01.html" class="block">
+          <span class="text-xs font-bold tracking-tight text-futura-text-light hover:text-futura-green">Content Strategy AI</span>
+        </a>
+      </div>
+      
+
+      <div class="border-l-2 border-futura-green pl-3">
+        <span class="text-xs font-bold tracking-tight text-futura-dark">Retail UX Transformation</span>
+      </div>
+      
+
+      <div class="pl-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+        <a href="case-03.html" class="block">
+          <span class="text-xs font-bold tracking-tight text-futura-text-light hover:text-futura-green">Sustainable Supply Chain</span>
+        </a>
+      </div>
+      
+
+      <div class="pl-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+        <a href="case-04.html" class="block">
+          <span class="text-xs font-bold tracking-tight text-futura-text-light hover:text-futura-green">AI Agent Workflow System</span>
+        </a>
+      </div>
+      
 </div>
 </div>
 <!-- Content Outline -->
@@ -187,27 +242,25 @@
 </div>
 <!-- Branch Nodes -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    
     <div class="bg-white p-6 border border-futura-border rounded-sm hover:border-futura-green transition-all">
       <span class="text-futura-green font-bold text-sm mb-2 block">01. 量化</span>
       <h5 class="font-bold text-sm mb-2">数据指标量化</h5>
       <p class="text-[11px] text-futura-text-light">建立 UX 评估指标体系，量化用户体验现状。</p>
     </div>
   
-
     <div class="bg-white p-6 border border-futura-border rounded-sm hover:border-futura-green transition-all">
       <span class="text-futura-green font-bold text-sm mb-2 block">02. 定位</span>
       <h5 class="font-bold text-sm mb-2">流失节点定位</h5>
       <p class="text-[11px] text-futura-text-light">通过漏斗分析识别用户流失的关键环节。</p>
     </div>
   
-
     <div class="bg-white p-6 border border-futura-border rounded-sm hover:border-futura-green transition-all">
       <span class="text-futura-green font-bold text-sm mb-2 block">03. 假设</span>
       <h5 class="font-bold text-sm mb-2">优化假设建立</h5>
       <p class="text-[11px] text-futura-text-light">基于用户调研提出可验证的优化假设。</p>
     </div>
   
-
     <div class="bg-white p-6 border border-futura-border rounded-sm hover:border-futura-green transition-all">
       <span class="text-futura-green font-bold text-sm mb-2 block">04. 验证</span>
       <h5 class="font-bold text-sm mb-2">A/B 测试验证</h5>
@@ -240,6 +293,7 @@
 <h2 class="text-3xl font-bold mt-2">核心实施策略</h2>
 </div>
 <div class="relative flex flex-col gap-12 mt-12">
+    
     <div class="relative flex gap-8 z-10 group">
       <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white border-2 border-futura-green flex items-center justify-center text-futura-green font-bold text-sm transition-all group-hover:bg-futura-green group-hover:text-white">
         01
@@ -255,7 +309,6 @@
       </div>
     </div>
   
-
     <div class="relative flex gap-8 z-10 group">
       <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white border-2 border-futura-green flex items-center justify-center text-futura-green font-bold text-sm transition-all group-hover:bg-futura-green group-hover:text-white">
         02
@@ -271,7 +324,23 @@
       </div>
     </div>
   
-
+    <div class="relative flex gap-8 z-10 group">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white border-2 border-futura-green flex items-center justify-center text-futura-green font-bold text-sm transition-all group-hover:bg-futura-green group-hover:text-white">
+        03
+      </div>
+      <div class="flex-1">
+        <h3 class="text-xl font-bold mb-3">数据驱动决策</h3>
+        <p class="text-futura-text-light text-sm mb-6">建立数据监控看板，实时追踪每次改动的效果，用数据说话而非主观判断。</p>
+        
+        <div class="flex flex-wrap gap-3">
+          <span class="px-3 py-1 bg-gray-100 text-[10px] font-bold uppercase tracking-wider">Data Dashboard</span><span class="px-3 py-1 bg-gray-100 text-[10px] font-bold uppercase tracking-wider">Real-time Monitoring</span><span class="px-3 py-1 bg-gray-100 text-[10px] font-bold uppercase tracking-wider">Evidence-based</span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+    </div>
+  
     <div class="relative flex gap-8 z-10 group">
       <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white border-2 border-futura-green flex items-center justify-center text-futura-green font-bold text-sm transition-all group-hover:bg-futura-green group-hover:text-white">
         03
@@ -361,25 +430,7 @@
 </div>
 <!-- Right: Metrics -->
 <div class="lg:col-span-5 flex flex-col gap-10 py-2">
-    <div class="border-l-2 border-futura-green pl-6">
-      <span class="block text-5xl font-black mb-1 tracking-tighter">47%</span>
-      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">Conversion Rate ↑</p>
-      <p class="text-xs text-gray-300 leading-relaxed">核心购买路径转化率提升 47%，直接带动月销售额增长 320 万。</p>
-    </div>
-  
-
-    <div class="border-l-2 border-futura-green pl-6">
-      <span class="block text-5xl font-black mb-1 tracking-tighter">-38%</span>
-      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">Churn Rate ↓</p>
-      <p class="text-xs text-gray-300 leading-relaxed">新用户 7 日留存率提升 38%，用户生命周期价值显著改善。</p>
-    </div>
-  
-
-    <div class="border-l-2 border-futura-green pl-6">
-      <span class="block text-5xl font-black mb-1 tracking-tighter">3 天</span>
-      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">Implementation Time</p>
-      <p class="text-xs text-gray-300 leading-relaxed">从设计到上线仅用 3 天，验证了敏捷重构方法的可行性。</p>
-    </div>
+    
   </div>
 <div class="border-l-2 border-futura-green pl-6">
 <span class="block text-5xl font-black mb-1 tracking-tighter">92%</span>
@@ -399,7 +450,7 @@
 <!-- BEGIN: Footer / CTA -->
 <footer class="pt-12 border-t border-futura-border flex flex-col md:flex-row items-center justify-between gap-6">
 <p class="text-sm text-futura-text-light">© 2026 江来 Futura. All rights reserved.</p>
-<a class="inline-flex items-center px-8 py-3 bg-futura-dark text-white text-sm font-bold rounded-full hover:bg-black transition-all group" href="#">
+<a class="inline-flex items-center px-8 py-3 bg-futura-dark text-white text-sm font-bold rounded-full hover:bg-black transition-all group" href="../index.html">
           Back to Portfolio
           <svg class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
@@ -437,6 +488,74 @@
           dot.classList.remove('bg-futura-border');
         }
       });
-    });</script>
+    });
+<script>
+    // 页面加载时的过渡动画
+    document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.add('page-enter');
+        
+        // 检查是否从首页跳转而来
+        const fromPage = sessionStorage.getItem('fromPage');
+        const navigateToCase = sessionStorage.getItem('navigateToCase');
+        
+        if (fromPage === 'index' && navigateToCase) {
+            // 清除 session 数据
+            sessionStorage.removeItem('fromPage');
+            sessionStorage.removeItem('navigateToCase');
+        }
+    });
+    
+    // 页面卸载时的过渡动画
+    window.addEventListener('beforeunload', () => {
+        document.body.classList.remove('page-enter');
+        document.body.classList.add('page-exit');
+    });
+    
+    // 所有 .html 文件链接的处理（包括案例选择器）
+    document.querySelectorAll('a[href$=".html"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = link.getAttribute('href');
+            
+            // 添加过渡动画
+            document.body.classList.add('page-exit');
+            
+            setTimeout(() => {
+                window.location.href = targetPage;
+            }, 300);
+        });
+    });
+    
+    // 所有包含 index.html 的链接处理（BACK按钮）
+    document.querySelectorAll('a[href*="index.html"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // 添加过渡动画
+            document.body.classList.add('page-exit');
+            sessionStorage.setItem('backToIndex', 'true');
+            
+            setTimeout(() => {
+                window.location.href = link.getAttribute('href');
+            }, 300);
+        });
+    });
+    
+    // 平滑滚动到锚点
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // 更新 URL 但不添加历史记录
+                history.replaceState(null, null, targetId);
+            }
+        });
+    });
+</script>
 <!-- END: Navigation Script -->
 </body></html>

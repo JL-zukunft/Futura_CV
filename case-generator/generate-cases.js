@@ -58,11 +58,15 @@ function generateCasePage(caseData, template) {
       <h5 class="font-bold text-sm mb-2">${item.title}</h5>
       <p class="text-[11px] text-futura-text-light">${item.description}</p>
     </div>
-  `).join('\n');
+  `).join('');
   
   const frameworkMatch = html.match(/(<div class="grid grid-cols-1 md:grid-cols-4 gap-4">)([\s\S]*?)(<\/div>)/);
   if (frameworkMatch) {
-    html = html.replace(frameworkMatch[0], frameworkMatch[1] + frameworkItems + frameworkMatch[3]);
+    // 清理重复的 framework 项
+    let frameworkSection = frameworkMatch[1] + frameworkItems + frameworkMatch[3];
+    // 移除可能存在的重复项
+    frameworkSection = frameworkSection.replace(/(<div class="bg-white p-6 border border-futura-border rounded-sm hover:border-futura-green transition-all">[\s\S]*?<\/div>\s*){4,}<\/div>/s, frameworkItems + '</div>');
+    html = html.replace(frameworkMatch[0], frameworkSection);
   }
   
   // 替换方法论标题
@@ -84,11 +88,15 @@ function generateCasePage(caseData, template) {
         ` : ''}
       </div>
     </div>
-  `).join('\n');
+  `).join('');
   
   const methodologyMatch = html.match(/(<div class="relative flex flex-col gap-12 mt-12">)([\s\S]*?)(<\/div>.*?<!-- END: Solutions -->)/s);
   if (methodologyMatch) {
-    html = html.replace(methodologyMatch[0], methodologyMatch[1] + methodologyItems + methodologyMatch[3]);
+    // 清理重复的 methodology 项
+    let methodologySection = methodologyMatch[1] + methodologyItems + methodologyMatch[3];
+    // 移除可能存在的重复项
+    methodologySection = methodologySection.replace(/(<div class="relative flex gap-8 z-10 group">[\s\S]*?<\/div>\s*){2,}(<\/div>.*?<!-- END: Solutions -->)/s, methodologyItems + '$2');
+    html = html.replace(methodologyMatch[0], methodologySection);
   }
   
   // 替换 KPI 标题
@@ -101,32 +109,141 @@ function generateCasePage(caseData, template) {
       <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">${metric.label}</p>
       <p class="text-xs text-gray-300 leading-relaxed">${metric.description}</p>
     </div>
-  `).join('\n');
+  `).join('');
   
   const kpiMatch = html.match(/(<div class="lg:col-span-5 flex flex-col gap-10 py-2">)([\s\S]*?)(<\/div>.*?<!-- END: Outcomes -->)/s);
   if (kpiMatch) {
-    html = html.replace(kpiMatch[0], kpiMatch[1] + kpiItems + kpiMatch[3]);
+    // 清理重复的 KPI 项
+    let kpiSection = kpiMatch[1] + kpiItems + kpiMatch[3];
+    // 移除可能存在的重复项（在模板中已有的）
+    kpiSection = kpiSection.replace(/<div class="border-l-2 border-futura-green pl-6">[\s\S]*?<\/div>\s*<div class="border-l-2 border-futura-green pl-6">[\s\S]*?<\/div>\s*<div class="border-l-2 border-futura-green pl-6">[\s\S]*?<\/div>(.*?<!-- END: Outcomes -->)/s, '$1');
+    html = html.replace(kpiMatch[0], kpiSection);
   }
   
   // 替换侧边栏项目选择器
   const projectItems = caseData.allCases.map((c, index) => {
     const isActive = c.id === caseData.id;
-    return `
-      <div class="${isActive ? 'border-l-2 border-futura-green pl-3' : 'pl-3 opacity-60 hover:opacity-100'}">
-        <p class="text-xs font-bold tracking-tight ${isActive ? 'text-futura-dark' : 'text-futura-text-light'}">${c.name}</p>
-        ${!isActive ? `<a href="${c.id}.html" class="mt-2 block text-[10px] text-futura-text-light hover:text-futura-green">查看案例 →</a>` : ''}
+    if (isActive) {
+      return `
+      <div class="border-l-2 border-futura-green pl-3">
+        <span class="text-xs font-bold tracking-tight text-futura-dark">${c.projectName}</span>
       </div>
-    `;
+      `;
+    } else {
+      return `
+      <div class="pl-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+        <a href="${c.id}.html" class="block">
+          <span class="text-xs font-bold tracking-tight text-futura-text-light hover:text-futura-green">${c.projectName}</span>
+        </a>
+      </div>
+      `;
+    }
   }).join('\n');
   
-  html = html.replace(/(<div class="group cursor-pointer">)([\s\S]*?)(<\/div>.*?<!-- Project Switcher -->)/s, 
-    `$1${projectItems}$3`);
+  // 构建完整的项目选择器HTML
+  const projectSelectorHtml = `
+<div class="mb-10">
+<p class="text-[10px] uppercase tracking-[0.2em] text-futura-text-light mb-3 flex items-center">
+      Current Project
+      <span class="material-symbols-outlined text-[12px] ml-1">expand_more</span>
+</p>
+<div class="group cursor-pointer">
+${projectItems}
+</div>
+</div>
+`;
+  
+  // 替换项目选择器部分
+  const projectSelectorMatch = html.match(/(<!-- Project Switcher -->[\s\S]*?<!-- Content Outline -->)/s);
+  if (projectSelectorMatch) {
+    html = html.replace(projectSelectorMatch[1], `<!-- Project Switcher -->${projectSelectorHtml}<!-- Content Outline -->`);
+  }
   
   // 替换侧边栏 Outline 链接
   html = html.replace(/href="#overview"/g, `href="#overview"`);
   
-  // 替换底部返回链接
-  html = html.replace(/href="#">Back to Portfolio/, 'href="../index.html">Back to Portfolio');
+  // 替换底部返回链接 - 精确匹配footer中的链接
+  const footerMatch = html.match(/(<!-- BEGIN: Footer \/ CTA -->[\s\S]*?<!-- END: Footer \/ CTA -->)/s);
+  if (footerMatch) {
+    let footerHtml = footerMatch[1];
+    footerHtml = footerHtml.replace(/href="#"/, 'href="../index.html"');
+    html = html.replace(footerMatch[1], footerHtml);
+  }
+  
+  // 添加页面过渡动画和交互脚本
+  const scriptEndTag = '</script>\n<!-- END: Navigation Script -->';
+  const newScript = `
+<script>
+    // 页面加载时的过渡动画
+    document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.add('page-enter');
+        
+        // 检查是否从首页跳转而来
+        const fromPage = sessionStorage.getItem('fromPage');
+        const navigateToCase = sessionStorage.getItem('navigateToCase');
+        
+        if (fromPage === 'index' && navigateToCase) {
+            // 清除 session 数据
+            sessionStorage.removeItem('fromPage');
+            sessionStorage.removeItem('navigateToCase');
+        }
+    });
+    
+    // 页面卸载时的过渡动画
+    window.addEventListener('beforeunload', () => {
+        document.body.classList.remove('page-enter');
+        document.body.classList.add('page-exit');
+    });
+    
+    // 所有 .html 文件链接的处理（包括案例选择器）
+    document.querySelectorAll('a[href$=".html"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = link.getAttribute('href');
+            
+            // 添加过渡动画
+            document.body.classList.add('page-exit');
+            
+            setTimeout(() => {
+                window.location.href = targetPage;
+            }, 300);
+        });
+    });
+    
+    // 所有包含 index.html 的链接处理（BACK按钮）
+    document.querySelectorAll('a[href*="index.html"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // 添加过渡动画
+            document.body.classList.add('page-exit');
+            sessionStorage.setItem('backToIndex', 'true');
+            
+            setTimeout(() => {
+                window.location.href = link.getAttribute('href');
+            }, 300);
+        });
+    });
+    
+    // 平滑滚动到锚点
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // 更新 URL 但不添加历史记录
+                history.replaceState(null, null, targetId);
+            }
+        });
+    });
+</script>
+<!-- END: Navigation Script -->`;
+  
+  html = html.replace(scriptEndTag, newScript);
   
   return html;
 }

@@ -2272,6 +2272,42 @@
                 transform: scale(1);
             }
         }
+        
+        /* Page Transition Animations */
+        body {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        body.page-enter {
+            animation: pageEnter 0.4s ease-out forwards;
+        }
+        
+        body.page-exit {
+            animation: pageExit 0.3s ease-in forwards;
+        }
+        
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pageExit {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -3315,6 +3351,17 @@ AI介入的正确节点：
     </footer>
 
     <script>
+        // 页面加载时的过渡动画
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('page-enter');
+            
+            // 检查是否从详情页返回
+            const backToIndex = sessionStorage.getItem('backToIndex');
+            if (backToIndex === 'true') {
+                sessionStorage.removeItem('backToIndex');
+            }
+        });
+        
         let currentLang = 'zh';
         let isScrolling = false;
         let openCase = null;
@@ -3503,6 +3550,36 @@ AI介入的正确节点：
             let currentIndex = 0;
             let isAnimating = false;
             
+            // 自动轮播功能
+            let autoPlayTimer = null;
+            const AUTOPLAY_DELAY = 3000; // 3 秒自动轮播
+            
+            // 启动自动轮播
+            function startAutoPlay() {
+                if (autoPlayTimer) return;
+                
+                autoPlayTimer = setInterval(() => {
+                    if (!isAnimating) {
+                        const nextIndex = (currentIndex + 1) % accordionItems.length;
+                        switchCase(nextIndex);
+                    }
+                }, AUTOPLAY_DELAY);
+            }
+            
+            // 停止自动轮播
+            function stopAutoPlay() {
+                if (autoPlayTimer) {
+                    clearInterval(autoPlayTimer);
+                    autoPlayTimer = null;
+                }
+            }
+            
+            // 重置自动轮播计时器
+            function resetAutoPlay() {
+                stopAutoPlay();
+                startAutoPlay();
+            }
+            
             // Preload images for next/prev cases
             function preloadImages(index) {
                 const nextIndex = (index + 1) % accordionItems.length;
@@ -3609,6 +3686,7 @@ AI介入的正确节点：
             // Handle indicator dot clicks
             indicatorDots.forEach((dot, index) => {
                 dot.addEventListener('click', () => {
+                    resetAutoPlay(); // 重置自动轮播
                     switchCase(index);
                 });
             });
@@ -3617,6 +3695,7 @@ AI介入的正确节点：
             const navButtons = document.querySelectorAll('.cases-indicator-nav');
             navButtons.forEach(button => {
                 button.addEventListener('click', () => {
+                    resetAutoPlay(); // 重置自动轮播
                     const nav = button.getAttribute('data-nav');
                     if (nav === 'first') {
                         switchCase(0);
@@ -3634,6 +3713,7 @@ AI介入的正确节点：
                     }
                     
                     if (!item.classList.contains('active')) {
+                        resetAutoPlay(); // 重置自动轮播
                         switchCase(index);
                     }
                 });
@@ -3642,8 +3722,10 @@ AI介入的正确节点：
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowLeft') {
+                    resetAutoPlay(); // 重置自动轮播
                     switchCase(currentIndex - 1, true);
                 } else if (e.key === 'ArrowRight') {
+                    resetAutoPlay(); // 重置自动轮播
                     switchCase(currentIndex + 1, true);
                 }
             });
@@ -3655,6 +3737,7 @@ AI介入的正确节点：
             let touchEndTime = 0;
             
             casesAccordion.addEventListener('touchstart', (e) => {
+                stopAutoPlay(); // 停止自动轮播
                 touchStartX = e.changedTouches[0].screenX;
                 touchStartTime = Date.now();
             }, { passive: true });
@@ -3663,6 +3746,7 @@ AI介入的正确节点：
                 touchEndX = e.changedTouches[0].screenX;
                 touchEndTime = Date.now();
                 handleSwipe();
+                startAutoPlay(); // 重新启动自动轮播
             }, { passive: true });
             
             // Mouse drag
@@ -3674,6 +3758,7 @@ AI介入的正确节点：
                 if (e.target.closest('.case-accordion-btn') || e.target.closest('.case-accordion-tag')) {
                     return;
                 }
+                stopAutoPlay(); // 停止自动轮播
                 isDragging = true;
                 dragStartX = e.screenX;
                 dragStartTime = Date.now();
@@ -3687,6 +3772,7 @@ AI介入的正确节点：
                     touchEndTime = Date.now();
                     touchStartTime = dragStartTime;
                     handleSwipe();
+                    startAutoPlay(); // 重新启动自动轮播
                 }
             });
             
@@ -3721,11 +3807,29 @@ AI介入的正确节点：
                     btn.style.transform = 'scale(0.95)';
                     btn.style.transition = 'transform 0.2s ease';
                     
+                    // 清除所有卡片的 flipped 状态
+                    document.querySelectorAll('.case-accordion-item').forEach(item => {
+                        item.classList.remove('flipped');
+                    });
+                    
+                    // 关闭浮动层（如果打开）
+                    const floatingLayer = document.getElementById('floatingLayer');
+                    if (floatingLayer && floatingLayer.classList.contains('open')) {
+                        floatingLayer.classList.remove('open');
+                    }
+                    
+                    // 添加到 sessionStorage 用于页面过渡动画
+                    sessionStorage.setItem('navigateToCase', caseId);
+                    sessionStorage.setItem('fromPage', 'index');
+                    
+                    // 添加页面退出过渡动画
+                    document.body.classList.add('page-exit');
+                    
                     setTimeout(() => {
                         btn.style.transform = 'scale(1)';
                         // 跳转到详情页
                         window.location.href = targetPage;
-                    }, 200);
+                    }, 300);
                 });
             });
             
@@ -3797,11 +3901,14 @@ AI介入的正确节点：
             // Center the initial active card
             setTimeout(() => {
                 centerActiveCard(0);
+                // 启动自动轮播
+                startAutoPlay();
             }, 100);
             
             // Recenter on window resize
             window.addEventListener('resize', () => {
                 centerActiveCard(currentIndex);
+                resetAutoPlay(); // 重置自动轮播
             });
         }
 
