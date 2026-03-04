@@ -1,24 +1,24 @@
 /**
  * ============================================
- * Portfolio API 客户端
+ * FuturaCV API 客户端
  * ============================================
  * 功能：封装所有与后端 API 的交互
- * 使用：在 portfolio.html 中引入此文件
+ * 使用：在 futuracv.html 中引入此文件
  * ============================================
  */
 
 // API 基础 URL（部署后替换为实际的 Workers URL）
-const API_BASE_URL = 'https://portfolio-api.your-domain.workers.dev';
+const API_BASE_URL = 'https://futuracv-api.your-domain.workers.dev';
 
 // 生成访客唯一标识（浏览器指纹）
 function generateVisitorId() {
   // 简单实现：使用随机 ID + 时间戳
   // 生产环境可以使用更复杂的指纹算法
-  let visitorId = localStorage.getItem('portfolio_visitor_id');
+  let visitorId = localStorage.getItem('futuracv_visitor_id');
   
   if (!visitorId) {
     visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('portfolio_visitor_id', visitorId);
+    localStorage.setItem('futuracv_visitor_id', visitorId);
   }
   
   return visitorId;
@@ -308,7 +308,7 @@ function initCaseViewTracking() {
  */
 async function initApiClient() {
   try {
-    console.log('Initializing Portfolio API Client...');
+    console.log('Initializing FuturaCV API Client...');
     
     // 1. 获取案例数据并渲染
     const cases = await getCases();
@@ -322,7 +322,7 @@ async function initApiClient() {
     // 3. 初始化案例浏览追踪
     initCaseViewTracking();
     
-    console.log('Portfolio API Client initialized successfully');
+    console.log('FuturaCV API Client initialized successfully');
   } catch (error) {
     console.error('Failed to initialize API Client:', error);
   }

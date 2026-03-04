@@ -1,6 +1,8 @@
-# 📘 个人作品集网站
+# 📘 个人作品集网站 FuturaCV
 
 > 一个现代化的个人作品集网站 - 完全免费、易于部署、功能完整
+> 
+> **项目名称：** FuturaCV - 消费品 × AI 产品设计师作品集
 
 **快速开始：** 请阅读 [`使用指南.md`](./使用指南.md)
 
@@ -37,18 +39,19 @@
 ```
 📁 项目根目录/
 │
-├── 📄 portfolio.html                    ← 主页面
+├── 📄 futuracv.html (或 index.html)   ← 主页面
 ├── 📁 frontend/
-│   └── api-client.js                   ← 前端 API 客户端
-├── 📁 backend-tencent/                  ← 腾讯云后端（国内推荐）
+│   └── api-client.js                 ← 前端 API 客户端
+├── 📁 backend-tencent/               ← 腾讯云后端（国内推荐）
 │   ├── api/futura-html-api/
-│   │   ├── index.js                    ← 云函数代码
-│   │   └── package.json                ← 依赖配置
+│   │   ├── index.js                  ← 云函数代码
+│   │   └── package.json              ← 依赖配置
+│   ├── functions/                    ← 备用（可删除）
 │   ├── scripts/
-│   │   └── init-database.js            ← 数据库初始化脚本
-│   ├── cloudbaserc.json                ← 腾讯云配置文件
-│   └── package.json                    ← 项目配置
-└── 📘 使用指南.md                       ← 完整使用指南
+│   │   └── init-database.js          ← 数据库初始化
+│   ├── cloudbaserc.json              ← 配置文件
+│   └── package.json                  ← 项目配置
+└── 📘 使用指南.md                    ← 完整使用指南
 ```
 
 ---

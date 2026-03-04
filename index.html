@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0042)file:///E:/00jobs/self_html/portfolio.html -->
+<!-- saved from url=(0042)file:///E:/00jobs/self_html/futuracv.html -->
 <html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -3831,10 +3831,11 @@ AI介入的正确节点：
         
         // 生成访客 ID
         function generateVisitorId() {
-            let visitorId = localStorage.getItem('portfolio_visitor_id');
+            let visitorId = localStorage.getItem('futuracv_visitor_id');
+            
             if (!visitorId) {
                 visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('portfolio_visitor_id', visitorId);
+                localStorage.setItem('futuracv_visitor_id', visitorId);
             }
             return visitorId;
         }

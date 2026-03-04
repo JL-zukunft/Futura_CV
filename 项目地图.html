@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuturaCV - 项目结构可视化</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc04;
+            --danger-color: #ea4335;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-hover: 0 3px 6px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        header h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 30px;
+            border-radius: 24px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: var(--primary-color);
+            border-color: white;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Mind Map View */
+        .mindmap {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .mindmap-root {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 1200px;
+        }
+
+        .node {
+            background: var(--card-bg);
+            border: 3px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+
+        .node:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .node.root {
+            background: linear-gradient(135deg, var(--primary-color), #5a94dc);
+            color: white;
+            font-size: 1.5em;
+            font-weight: 700;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .node.folder {
+            border-color: var(--secondary-color);
+            min-width: 200px;
+        }
+
+        .node.folder .node-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .node.file {
+            border-color: var(--accent-color);
+            min-width: 180px;
+            font-size: 0.9em;
+        }
+
+        .node-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-desc {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .node.root .node-desc {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .children {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .children::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .branch {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .branch::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            width: 20px;
+            height: 2px;
+            background: var(--border-color);
+        }
+
+        /* File Tree View */
+        .file-tree {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .tree-item {
+            margin: 8px 0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tree-item:hover {
+            background: var(--bg-color);
+        }
+
+        .tree-item.folder {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .tree-item.file {
+            color: var(--text-primary);
+            margin-left: 30px;
+        }
+
+        .tree-item .icon {
+            font-size: 1.2em;
+            width: 24px;
+            text-align: center;
+        }
+
+        .tree-item .path {
+            flex: 1;
+        }
+
+        .tree-item .size {
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        /* Timeline View */
+        .timeline {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+        }
+
+        .timeline-item:nth-child(even) {
+            align-self: flex-end;
+            justify-content: flex-start;
+            margin-left: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border: 4px solid white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-item:not(:nth-child(even))::after {
+            right: -10px;
+        }
+
+        .timeline-item:nth-child(even)::after {
+            left: -10px;
+        }
+
+        .timeline-content {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .mindmap-root {
+                min-width: 800px;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                width: 100%;
+                margin-left: 0;
+                padding-left: 60px;
+                padding-right: 20px;
+            }
+
+            .timeline-item::after,
+            .timeline-item:nth-child(even)::after {
+                left: 10px;
+            }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 3px solid;
+        }
+
+        .legend-color.root { background: var(--primary-color); border-color: var(--primary-color); }
+        .legend-color.folder { background: white; border-color: var(--secondary-color); }
+        .legend-color.file { background: white; border-color: var(--accent-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗺️ FuturaCV 项目地图</h1>
+            <p>可视化项目结构 · 一目了然</p>
+        </header>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="switchView('mindmap')">🧠 思维导图</div>
+            <div class="nav-tab" onclick="switchView('tree')">📁 文件树</div>
+            <div class="nav-tab" onclick="switchView('timeline')">⏱️ 部署流程</div>
+            <div class="nav-tab" onclick="switchView('stats')">📊 项目统计</div>
+        </div>
+
+        <!-- Mind Map View -->
+        <div id="mindmap" class="view-section active">
+            <div class="mindmap">
+                <div class="mindmap-root">
+                    <div class="node root">
+                        <div class="node-title">🎯 FuturaCV</div>
+                        <div class="node-desc">个人作品集网站</div>
+                    </div>
+
+                    <div class="children">
+                        <div class="branch">
+                            <div class="node folder">
+                                <div class="node-title">📂 frontend/</div>
+                                <div class="node-desc">前端代码</div>
+                            </div>
+                            <div class="children">
+                                <div class="branch">
+                                    <div class="node file">
+                                        <div class="node-title">📄 api-client.js</div>
+                                        <div class="node-desc">API 客户端封装</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="branch">
+                            <div class="node folder">
+                                <div class="node-title">📂 backend-tencent/</div>
+                                <div class="node-desc">腾讯云后端</div>
+                            </div>
+                            <div class="children">
+                                <div class="branch">
+                                    <div class="node folder">
+                                        <div class="node-title">📂 api/</div>
+                                        <div class="node-desc">云函数代码</div>
+                                    </div>
+                                    <div class="children">
+                                        <div class="branch">
+                                            <div class="node file">
+                                                <div class="node-title">📄 index.js</div>
+                                                <div class="node-desc">云函数入口</div>
+                                            </div>
+                                        </div>
+                                        <div class="branch">
+                                            <div class="node file">
+                                                <div class="node-title">📄 package.json</div>
+                                                <div class="node-desc">依赖配置</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="branch">
+                                    <div class="node folder">
+                                        <div class="node-title">📂 scripts/</div>
+                                        <div class="node-desc">工具脚本</div>
+                                    </div>
+                                    <div class="children">
+                                        <div class="branch">
+                                            <div class="node file">
+                                                <div class="node-title">📄 init-database.js</div>
+                                                <div class="node-desc">数据库初始化</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="branch">
+                                    <div class="node file">
+                                        <div class="node-title">📄 cloudbaserc.json</div>
+                                        <div class="node-desc">腾讯云配置</div>
+                                    </div>
+                                </div>
+                                <div class="branch">
+                                    <div class="node file">
+                                        <div class="node-title">📄 package.json</div>
+                                        <div class="node-desc">项目配置</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="branch">
+                            <div class="node file">
+                                <div class="node-title">📄 index.html</div>
+                                <div class="node-desc">主页面（入口）</div>
+                            </div>
+                        </div>
+
+                        <div class="branch">
+                            <div class="node file">
+                                <div class="node-title">📄 README.md</div>
+                                <div class="node-desc">项目说明</div>
+                            </div>
+                        </div>
+
+                        <div class="branch">
+                            <div class="node file">
+                                <div class="node-title">📄 .gitignore</div>
+                                <div class="node-desc">Git 忽略配置</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color root"></div>
+                    <span>项目根节点</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color folder"></div>
+                    <span>文件夹</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color file"></div>
+                    <span>文件</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Tree View -->
+        <div id="tree" class="view-section">
+            <div class="file-tree">
+                <h2 style="margin-bottom: 20px; color: var(--primary-color);">📁 项目文件结构</h2>
+                <div class="tree-item folder">
+                    <span class="icon">📂</span>
+                    <span class="path">FuturaCV/</span>
+                </div>
+                <div class="tree-item folder">
+                    <span class="icon">📂</span>
+                    <span class="path">frontend/</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">api-client.js</span>
+                    <span class="size">8.2 KB</span>
+                </div>
+                <div class="tree-item folder">
+                    <span class="icon">📂</span>
+                    <span class="path">backend-tencent/</span>
+                </div>
+                <div class="tree-item folder">
+                    <span class="icon">📂</span>
+                    <span class="path">├─ api/</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">│  ├─ index.js</span>
+                    <span class="size">3.5 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">│  └─ package.json</span>
+                    <span class="size">0.8 KB</span>
+                </div>
+                <div class="tree-item folder">
+                    <span class="icon">📂</span>
+                    <span class="path">├─ scripts/</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">│  └─ init-database.js</span>
+                    <span class="size">2.1 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">├─ cloudbaserc.json</span>
+                    <span class="size">0.3 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">├─ package.json</span>
+                    <span class="size">0.9 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📄</span>
+                    <span class="path">└─ package-lock.json</span>
+                    <span class="size">45.2 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">🌐</span>
+                    <span class="path">index.html</span>
+                    <span class="size">156.8 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">📖</span>
+                    <span class="path">README.md</span>
+                    <span class="size">2.4 KB</span>
+                </div>
+                <div class="tree-item file">
+                    <span class="icon">⚙️</span>
+                    <span class="path">.gitignore</span>
+                    <span class="size">0.2 KB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline View -->
+        <div id="timeline" class="view-section">
+            <div class="timeline">
+                <h2 style="text-align: center; margin-bottom: 40px; color: var(--primary-color);">⏱️ 项目部署流程</h2>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>1️⃣ 准备阶段</h3>
+                        <p>整理项目文件，清理不必要的代码和配置</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>删除 backend/ (Cloudflare 版本)</li>
+                            <li>删除 functions/ (备用版本)</li>
+                            <li>统一命名为 FuturaCV</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>2️⃣ 前端部署</h3>
+                        <p>将前端文件部署到 EdgeOne Pages</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>连接 GitHub 仓库</li>
+                            <li>自动构建和部署</li>
+                            <li>获取访问域名</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>3️⃣ 后端部署</h3>
+                        <p>部署腾讯云云函数</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>创建云函数环境</li>
+                            <li>上传函数代码</li>
+                            <li>配置触发器</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>4️⃣ 数据库配置</h3>
+                        <p>初始化和配置数据库</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>创建数据库集合</li>
+                            <li>执行初始化脚本</li>
+                            <li>导入测试数据</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>5️⃣ 联调测试</h3>
+                        <p>前后端联调与功能测试</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>测试 API 接口</li>
+                            <li>验证数据展示</li>
+                            <li>检查访客统计</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>6️⃣ 上线发布</h3>
+                        <p>正式上线并监控</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>绑定自定义域名</li>
+                            <li>配置 HTTPS</li>
+                            <li>监控运行状态</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats View -->
+        <div id="stats" class="view-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">文件总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">主要目录</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">217</div>
+                    <div class="stat-label">总代码量 (KB)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">免费部署</div>
+                </div>
+            </div>
+
+            <div class="file-tree">
+                <h2 style="margin-bottom: 20px; color: var(--primary-color);">📋 文件详情</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--secondary-color); margin-bottom: 15px;">🎨 前端文件</h3>
+                    <div class="tree-item file">
+                        <span class="icon">🌐</span>
+                        <span class="path">index.html</span>
+                        <span class="size">156.8 KB</span>
+                    </div>
+                    <p style="margin-left: 60px; color: var(--text-secondary); margin-top: 10px;">
+                        主页面，包含所有 HTML 结构、CSS 样式和 JavaScript 逻辑
+                    </p>
+                    
+                    <div class="tree-item file">
+                        <span class="icon">📄</span>
+                        <span class="path">frontend/api-client.js</span>
+                        <span class="size">8.2 KB</span>
+                    </div>
+                    <p style="margin-left: 60px; color: var(--text-secondary); margin-top: 10px;">
+                        API 客户端，封装所有与后端的通信逻辑
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--secondary-color); margin-bottom: 15px;">🔧 后端文件</h3>
+                    <div class="tree-item file">
+                        <span class="icon">📄</span>
+                        <span class="path">backend-tencent/api/index.js</span>
+                        <span class="size">3.5 KB</span>
+                    </div>
+                    <p style="margin-left: 60px; color: var(--text-secondary); margin-top: 10px;">
+                        云函数入口，处理所有 API 请求
+                    </p>
+                    
+                    <div class="tree-item file">
+                        <span class="icon">📄</span>
+                        <span class="path">backend-tencent/scripts/init-database.js</span>
+                        <span class="size">2.1 KB</span>
+                    </div>
+                    <p style="margin-left: 60px; color: var(--text-secondary); margin-top: 10px;">
+                        数据库初始化脚本，创建表结构和初始数据
+                    </p>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--secondary-color); margin-bottom: 15px;">⚙️ 配置文件</h3>
+                    <div class="tree-item file">
+                        <span class="icon">📄</span>
+                        <span class="path">backend-tencent/cloudbaserc.json</span>
+                        <span class="size">0.3 KB</span>
+                    </div>
+                    <p style="margin-left: 60px; color: var(--text-secondary); margin-top: 10px;">
+                        腾讯云云开发环境配置
+                    </p>
+                    
+                    <div class="tree-item file">
+                        <span class="icon">📄</span>
+                        <span class="path">.gitignore</span>
+                        <span class="size">0.2 KB</span>
+                    </div>
+                    <p style="margin-left: 60px; color: var(--text-secondary); margin-top: 10px;">
+                        Git 忽略配置，排除 node_modules 等文件
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected view
+            document.getElementById(viewName).classList.add('active');
+            
+            // Update tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Add click animation to nodes
+        document.querySelectorAll('.node').forEach(node => {
+            node.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
