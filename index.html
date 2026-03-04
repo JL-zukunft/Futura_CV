@@ -42,6 +42,44 @@
         .font-display { font-family: 'Syne', sans-serif; }
         .font-mono { font-family: 'Space Mono', monospace; }
 
+        /* Page Transition Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .page-enter {
+            animation: fadeIn 0.4s ease-out, slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .page-exit {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Button Click Animation */
+        .btn-click {
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        
+        .btn-click:active {
+            transform: scale(0.95);
+        }
+
         /* Typography */
         .text-sm {
             font-size: 0.875rem;
@@ -3669,21 +3707,25 @@ AI介入的正确节点：
                 }
             }
             
-            // View detail button - 3D flip animation
-            document.querySelectorAll('.case-accordion-btn').forEach(btn => {
+            // View detail button - Navigate to case detail page with transition
+            document.querySelectorAll('.case-accordion-btn').forEach((btn, index) => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const item = btn.closest('.case-accordion-item');
                     
-                    if (item.classList.contains('active')) {
-                        document.querySelectorAll('.case-accordion-item').forEach(i => {
-                            if (i !== item) {
-                                i.classList.remove('flipped');
-                            }
-                        });
-                        
-                        item.classList.toggle('flipped');
-                    }
+                    // 获取当前案例 ID
+                    const caseNumber = (index + 1).toString().padStart(2, '0');
+                    const caseId = `case-${caseNumber}`;
+                    const targetPage = `cases/${caseId}.html`;
+                    
+                    // 添加点击动画效果
+                    btn.style.transform = 'scale(0.95)';
+                    btn.style.transition = 'transform 0.2s ease';
+                    
+                    setTimeout(() => {
+                        btn.style.transform = 'scale(1)';
+                        // 跳转到详情页
+                        window.location.href = targetPage;
+                    }, 200);
                 });
             });
             
