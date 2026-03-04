@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuturaCV - 完整技术文档</title>
+    <style>
+        :root {
+            --primary: #4285f4;
+            --success: #34a853;
+            --warning: #fbbc04;
+            --danger: #ea4335;
+            --bg: #f8f9fa;
+            --surface: #ffffff;
+            --text: #202124;
+            --text-secondary: #5f6368;
+            --border: #dadce0;
+            --code-bg: #263238;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.19);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .top-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 64px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        .top-nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .sidebar {
+            position: fixed;
+            left: 0; top: 64px; bottom: 0;
+            width: 300px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px 0;
+            z-index: 999;
+        }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title {
+            padding: 8px 24px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            gap: 12px;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover { background: var(--bg); }
+        .nav-item.active {
+            background: #e8f0fe;
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        .nav-icon { font-size: 1.2em; width: 24px; text-align: center; }
+        .nav-level-2 { padding-left: 48px; font-size: 0.9em; }
+        .main-content {
+            margin-left: 300px;
+            margin-top: 64px;
+            padding: 40px;
+            max-width: 1400px;
+        }
+        .doc-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        .section-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        .section-title {
+            font-size: 2em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+        .content-block { margin-bottom: 30px; }
+        .content-block h3 {
+            color: var(--text);
+            font-size: 1.4em;
+            margin: 24px 0 16px;
+        }
+        .content-block h4 {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin: 20px 0 12px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .info-box.warning {
+            background: #fff3e0;
+            border-left-color: var(--warning);
+        }
+        .info-box.success {
+            background: #e8f5e9;
+            border-left-color: var(--success);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        .data-table th, .data-table td {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+        .data-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        .data-table tr:nth-child(even) { background: var(--bg); }
+        .data-table tr:hover { background: #e8f0fe; }
+        .code-block {
+            background: var(--code-bg);
+            color: #aed581;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .code-block .comment { color: #546e7a; }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #aed581; }
+        .code-block .number { color: #f78c6c; }
+        .code-block .function { color: #82aaff; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-get { background: #e3f2fd; color: var(--primary); }
+        .badge-post { background: #e8f5e9; color: var(--success); }
+        .tree {
+            font-family: 'Consolas', monospace;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .tree-line { margin: 4px 0; }
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="top-nav-brand">
+            <span>📚</span>
+            <span>FuturaCV 技术文档</span>
+        </div>
+    </nav>
+
+    <aside class="sidebar">
+        <div class="nav-section">
+            <div class="nav-section-title">快速开始</div>
+            <a href="#overview" class="nav-item active">
+                <span class="nav-icon">🎯</span>
+                <span>项目概览</span>
+            </a>
+            <a href="#architecture" class="nav-item">
+                <span class="nav-icon">🏗️</span>
+                <span>系统架构</span>
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">API 文档</div>
+            <a href="#api-overview" class="nav-item">
+                <span class="nav-icon">🔌</span>
+                <span>API 概览</span>
+            </a>
+            <a href="#api-cases" class="nav-item nav-level-2">
+                <span class="nav-icon">📄</span>
+                <span>案例管理</span>
+            </a>
+            <a href="#api-tracking" class="nav-item nav-level-2">
+                <span class="nav-icon">📊</span>
+                <span>访客追踪</span>
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">数据库设计</div>
+            <a href="#database-schema" class="nav-item">
+                <span class="nav-icon">💾</span>
+                <span>数据库架构</span>
+            </a>
+            <a href="#naming-conventions" class="nav-item">
+                <span class="nav-icon">📝</span>
+                <span>命名规范</span>
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">部署指南</div>
+            <a href="#deployment" class="nav-item">
+                <span class="nav-icon">🚀</span>
+                <span>部署流程</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <section id="overview" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">🎯 项目概览</h1>
+                <p class="section-subtitle">FuturaCV - 现代化个人作品集网站</p>
+            </div>
+            <div class="content-block">
+                <h3>技术栈</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>层级</th><th>技术</th><th>说明</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>前端</strong></td>
+                            <td>HTML5 + CSS3 + JS</td>
+                            <td>响应式设计</td>
+                        </tr>
+                        <tr>
+                            <td><strong>边缘层</strong></td>
+                            <td>EdgeOne Pages</td>
+                            <td>CDN 加速</td>
+                        </tr>
+                        <tr>
+                            <td><strong>后端</strong></td>
+                            <td>腾讯云云开发</td>
+                            <td>Serverless</td>
+                        </tr>
+                        <tr>
+                            <td><strong>数据库</strong></td>
+                            <td>MongoDB</td>
+                            <td>文档存储</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="architecture" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">🏗️ 系统架构</h1>
+            </div>
+            <div class="content-block">
+                <h3>架构图</h3>
+                <div class="code-block">用户 → EdgeOne CDN → 云函数 API → MongoDB</div>
+                <h3>文件结构</h3>
+                <div class="code-block">FuturaCV/
+├── index.html (156.8 KB)
+├── frontend/api-client.js (8.2 KB)
+├── backend-tencent/
+│   ├── api/futura-html-api/index.js (12.5 KB)
+│   ├── scripts/init-database.js (2.1 KB)
+│   └── cloudbaserc.json (0.3 KB)
+├── 网页手册.html
+└── 项目地图.html</div>
+            </div>
+        </section>
+
+        <section id="api-overview" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">🔌 API 文档</h1>
+                <p class="section-subtitle">Base URL: https://您的环境 ID.service.tcloudbase.com/api</p>
+            </div>
+            <div class="content-block">
+                <h3>API 列表</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>端点</th><th>方法</th><th>说明</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/api/cases</code></td>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>获取案例列表</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/cases/:id</code></td>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>获取案例详情</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/track/visit</code></td>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>记录访问</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/stats</code></td>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>统计数据</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="api-cases" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">📄 案例管理 API</h1>
+            </div>
+            <div class="content-block">
+                <h3>GET /api/cases</h3>
+                <div class="code-block">{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "智能推荐系统",
+      "subtitle": "AI 驱动",
+      "description": "深度学习推荐",
+      "cover_image": "/images/case1.jpg",
+      "order_num": 1
+    }
+  ]
+}</div>
+            </div>
+        </section>
+
+        <section id="api-tracking" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">📊 访客追踪 API</h1>
+            </div>
+            <div class="content-block">
+                <h3>POST /api/track/visit</h3>
+                <div class="code-block">// 请求体
+{
+  "visitorId": "visitor_123",
+  "page": "/index.html",
+  "duration": 30,
+  "userAgent": "Mozilla/5.0...",
+  "referrer": "https://google.com"
+}
+
+// 响应
+{
+  "success": true,
+  "message": "Visit tracked"
+}</div>
+            </div>
+        </section>
+
+        <section id="database-schema" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">💾 数据库架构</h1>
+            </div>
+            <div class="content-block">
+                <h3>数据库集合</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>集合名</th><th>说明</th><th>主要字段</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>cases</code></td>
+                            <td>案例主表</td>
+                            <td>id, title, description, cover_image</td>
+                        </tr>
+                        <tr>
+                            <td><code>caseTabs</code></td>
+                            <td>案例详情</td>
+                            <td>case_id, tab_name, content</td>
+                        </tr>
+                        <tr>
+                            <td><code>visitors</code></td>
+                            <td>访客记录</td>
+                            <td>visitor_id, ip_address, total_visits</td>
+                        </tr>
+                        <tr>
+                            <td><code>pageViews</code></td>
+                            <td>页面浏览</td>
+                            <td>visitor_id, page_url, duration</td>
+                        </tr>
+                        <tr>
+                            <td><code>caseViews</code></td>
+                            <td>案例浏览</td>
+                            <td>case_id, visitor_id, view_duration</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="naming-conventions" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">📝 命名规范</h1>
+            </div>
+            <div class="content-block">
+                <h3>变量命名</h3>
+                <div class="info-box">
+                    <strong>规则：</strong>
+                    <ul>
+                        <li>使用 camelCase（小驼峰）</li>
+                        <li>布尔值用 is/has/are 前缀</li>
+                        <li>常量用 UPPER_SNAKE_CASE</li>
+                    </ul>
+                </div>
+                <div class="code-block">// ✅ 正确
+const visitorId = 'xxx';
+const isPublished = true;
+const API_BASE_URL = 'https://...';
+
+// ❌ 错误
+const visitor_id = 'xxx';
+const published = true;</div>
+            </div>
+            <div class="content-block">
+                <h3>数据库字段</h3>
+                <div class="code-block">// 主键：id (integer, auto-increment)
+// 外键：xxx_id (integer)
+// 时间：xxx_at (timestamp)
+// 布尔：is_xxx (boolean)
+// 计数：xxx_count (integer)</div>
+            </div>
+        </section>
+
+        <section id="deployment" class="doc-section">
+            <div class="section-header">
+                <h1 class="section-title">🚀 部署流程</h1>
+            </div>
+            <div class="content-block">
+                <h3>部署步骤</h3>
+                <div class="info-box success">
+                    <strong>预计时间：</strong> 15-20 分钟
+                </div>
+                <ol style="margin-left: 20px; line-height: 2;">
+                    <li>注册 EdgeOne 账号</li>
+                    <li>连接 GitHub 仓库</li>
+                    <li>自动构建部署</li>
+                    <li>配置腾讯云后端</li>
+                    <li>初始化数据库</li>
+                    <li>测试验证</li>
+                </ol>
+            </div>
+        </section>
+
+        <div class="doc-footer">
+            <p>📚 FuturaCV 技术文档 · 最后更新 2026-03-04</p>
+            <p>查看 <a href="网页手册.html">网页手册</a> · <a href="项目地图.html">项目地图</a></p>
+        </div>
+    </main>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
