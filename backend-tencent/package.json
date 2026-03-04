@@ -2,7 +2,7 @@
   "name": "futura-html-api",
   "version": "1.0.0",
   "description": "futura-html API - 腾讯云云开发版本",
-  "main": "api/cloudfunction.js",
+  "main": "api/futura-html-api/index.js",
   "scripts": {
     "init": "node scripts/init-database.js",
     "deploy": "cloudbase functions:deploy",

@@ -90,6 +90,81 @@
         transform: translateY(-20px);
       }
     }
+    
+    /* Back to Top Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 3rem;
+      height: 3rem;
+      background: #1a1a1a;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 40;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .back-to-top:hover {
+      background: #4a5d45;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .back-to-top:active {
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+      .back-to-top {
+        bottom: 1rem;
+        right: 1rem;
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+    
+    /* Language Toggle Button Styles (matching homepage) */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: #f0ede5;
+      border-radius: 20px;
+      padding: 4px;
+      border: 1px solid #d4d9cf;
+    }
+    
+    .lang-btn {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: #6b7164;
+      cursor: pointer;
+      border-radius: 16px;
+      transition: all 0.2s;
+    }
+    
+    .lang-btn.active {
+      background: #fdfcfa;
+      color: #1a1f16;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
   </style>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head>
 <body class="bg-futura-bg text-futura-dark font-sans selection:bg-futura-green selection:text-white">
@@ -100,14 +175,13 @@
 <span class="text-xl font-bold tracking-tighter">江来 JL</span>
 </div>
 <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
-<a class="hover:text-futura-green transition-colors" href="#">案例 / Cases</a>
-<a class="hover:text-futura-green transition-colors" href="#">方法论 / Method</a>
-<a class="hover:text-futura-green transition-colors border-b-2 border-futura-dark pb-1" href="#">项目详情 / Project Details</a>
+<a class="nav-link hover:text-futura-green transition-colors border-b-2 border-futura-dark pb-1" href="#" data-en="Project Details" data-zh="项目详情 / Project Details">项目详情 / Project Details</a>
 </div>
-<div class="flex items-center space-x-2 text-[10px] border border-futura-border rounded px-2 py-1">
-<span class="font-bold">中</span>
-<span class="text-gray-300">|</span>
-<span class="text-gray-400">EN</span>
+<div class="flex items-center space-x-2">
+<div class="lang-toggle">
+<button class="lang-btn active" data-lang="zh">中</button>
+<button class="lang-btn" data-lang="en">EN</button>
+</div>
 </div>
 </div>
 </nav>
@@ -118,7 +192,7 @@
 <div class="sticky-sidebar"><!-- Project Switcher -->
 <div class="mb-10">
 <p class="text-[10px] uppercase tracking-[0.2em] text-futura-text-light mb-3 flex items-center">
-      Current Project
+      当前项目 / Current Project
       <span class="material-symbols-outlined text-[12px] ml-1">expand_more</span>
 </p>
 <div class="group cursor-pointer">
@@ -152,32 +226,32 @@
 </div>
 <!-- Content Outline -->
 <div class="relative">
-<p class="text-[10px] uppercase tracking-[0.2em] text-futura-text-light mb-6">Outline</p>
+<p class="text-[10px] uppercase tracking-[0.2em] text-futura-text-light mb-6">目录 / Outline</p>
 <!-- Vertical Progress Line -->
 <div class="absolute left-[7px] top-[30px] bottom-0 w-[1px] bg-futura-border"></div>
 <ul class="space-y-6 text-[11px] font-semibold uppercase tracking-wider relative z-10">
 <li class="relative">
 <a class="flex items-center group transition-colors text-futura-green" href="#overview">
 <span class="w-3.5 h-3.5 rounded-full bg-futura-green border-4 border-white mr-3 shadow-sm"></span>
-          Overview
+          概览 / Overview
         </a>
 </li>
 <li class="relative">
 <a class="flex items-center group transition-colors text-futura-text-light hover:text-futura-dark" href="#framework">
 <span class="w-3.5 h-3.5 rounded-full bg-futura-border border-4 border-white mr-3 transition-colors group-hover:bg-futura-green/40"></span>
-          Logic Framework
+          逻辑框架 / Logic Framework
         </a>
 </li>
 <li class="relative">
 <a class="flex items-center group transition-colors text-futura-text-light hover:text-futura-dark" href="#solutions">
 <span class="w-3.5 h-3.5 rounded-full bg-futura-border border-4 border-white mr-3 transition-colors group-hover:bg-futura-green/40"></span>
-          Methodology
+          方法论 / Methodology
         </a>
 </li>
 <li class="relative">
 <a class="flex items-center group transition-colors text-futura-text-light hover:text-futura-dark" href="#outcomes">
 <span class="w-3.5 h-3.5 rounded-full bg-futura-border border-4 border-white mr-3 transition-colors group-hover:bg-futura-green/40"></span>
-          KPI &amp; Outcomes
+          成果 / KPI & Outcomes
         </a>
 </li>
 </ul>
@@ -186,7 +260,7 @@
 <div class="mt-auto pt-10">
 <button class="flex items-center text-[10px] text-futura-text-light hover:text-futura-dark uppercase tracking-widest">
 <span class="material-symbols-outlined text-[16px] mr-2">menu_open</span>
-      Collapse Sidebar
+      收起侧边栏 / Collapse Sidebar
     </button>
 </div></div>
 </aside>
@@ -206,13 +280,13 @@
     
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12 pt-12 border-t border-futura-border">
 <div>
-<h3 class="text-xs font-bold uppercase tracking-widest mb-4 text-futura-text-light">Challenge</h3>
+<h3 class="text-xs font-bold uppercase tracking-widest mb-4 text-futura-text-light" data-zh="挑战" data-en="Challenge">挑战 / Challenge</h3>
 <p class="text-lg leading-relaxed">
               品牌团队内部内容需求持续增长，小红书/抖音/详情页三端需同步更新，人工生产的效率和一致性都难以保证。核心矛盾：不是“AI能不能写文案”，而是“AI写出来的东西品牌敢不敢用”。
             </p>
 </div>
 <div>
-<h3 class="text-xs font-bold uppercase tracking-widest mb-4 text-futura-text-light">Approach</h3>
+<h3 class="text-xs font-bold uppercase tracking-widest mb-4 text-futura-text-light" data-zh="方案" data-en="Approach">方案 / Approach</h3>
 <p class="text-lg leading-relaxed">
               设计基于 LLM 的 AI Agent 系统，具备任务分解、工具调用、自我反思能力，可自主完成从市场分析到内容生成的完整工作流。
             </p>
@@ -223,7 +297,7 @@
 <!-- BEGIN: Framework (2x2 Matrix) -->
 <section class="mb-32" id="framework">
 <div class="mb-10">
-<span class="text-xs font-bold text-futura-text-light tracking-widest uppercase">01 / Logic Framework</span>
+<span class="text-xs font-bold text-futura-text-light tracking-widest uppercase">01 / 逻辑框架 / Logic Framework</span>
 <h2 class="text-3xl font-bold mt-2">AI Agent 能力架构</h2>
 </div>
 <div class="relative py-12">
@@ -289,7 +363,7 @@
 <!-- BEGIN: Solutions (Text-heavy Methodology) -->
 <section class="mb-32" id="solutions">
 <div class="mb-10">
-<span class="text-xs font-bold text-futura-text-light tracking-widest uppercase">02 / Methodology</span>
+<span class="text-xs font-bold text-futura-text-light tracking-widest uppercase">02 / 方法论 / Methodology</span>
 <h2 class="text-3xl font-bold mt-2">核心技术实现</h2>
 </div>
 <div class="relative flex flex-col gap-12 mt-12">
@@ -393,13 +467,13 @@
 <section class="mb-32" id="outcomes">
 <div class="bg-futura-dark text-white p-12 rounded-lg">
 <div class="mb-12">
-<span class="text-xs font-bold text-gray-400 tracking-widest uppercase">03 / Key Performance Indicators</span>
+<span class="text-xs font-bold text-gray-400 tracking-widest uppercase">03 / 关键绩效指标 / Key Performance Indicators</span>
 <h2 class="text-3xl font-bold mt-2 text-white">系统能力指标</h2>
 </div>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 <!-- Left: Visual Evidence / Multimedia Area -->
-<div class="lg:col-span-7 space-y-6">
-<div class="relative aspect-video bg-white/5 border border-white/10 rounded overflow-hidden group">
+<div class="lg:col-span-6 space-y-6 flex flex-col">
+<div class="relative aspect-video bg-white/5 border border-white/10 rounded overflow-hidden group flex-1">
 <div class="absolute inset-0 flex items-center justify-center">
 <div class="w-full h-full opacity-20">
 <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, #4a5d45 1px, transparent 0); background-size: 24px 24px;"></div>
@@ -417,7 +491,7 @@
 <div class="h-full bg-futura-green w-2/3"></div>
 </div>
 </div>
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-2 gap-4 flex-1">
 <div class="aspect-square bg-white/5 border border-white/10 rounded flex flex-col items-center justify-center p-4">
 <span class="material-symbols-outlined text-2xl text-futura-green mb-2">article</span>
 <p class="text-[8px] uppercase tracking-widest text-gray-500 text-center">Anonymized AI Output Log</p>
@@ -429,16 +503,19 @@
 </div>
 </div>
 <!-- Right: Metrics -->
-<div class="lg:col-span-5 flex flex-col gap-10 py-2">
-    
-  </div>
-<div class="border-l-2 border-futura-green pl-6">
-<span class="block text-5xl font-black mb-1 tracking-tighter">92%</span>
+<div class="lg:col-span-6 grid grid-cols-1 gap-6">
+<div class="bg-white/5 border border-white/10 rounded p-8 flex flex-col justify-center">
+<span class="block text-5xl font-black mb-2 tracking-tighter">10x</span>
+<p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">Efficiency Gain</p>
+<p class="text-xs text-gray-300 leading-relaxed">文案初稿生成耗时从 45 分钟缩短至 30 秒，显著释放品牌创意人力。</p>
+</div>
+<div class="bg-white/5 border border-white/10 rounded p-8 flex flex-col justify-center">
+<span class="block text-5xl font-black mb-2 tracking-tighter">92%</span>
 <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">Adoption Rate</p>
 <p class="text-xs text-gray-300 leading-relaxed">精准的 RAG 知识库与 Prompt 工程，使人工对 AI 初稿的微调率低于 10%。</p>
 </div>
-<div class="border-l-2 border-futura-green pl-6">
-<span class="block text-5xl font-black mb-1 tracking-tighter">0.0</span>
+<div class="bg-white/5 border border-white/10 rounded p-8 flex flex-col justify-center">
+<span class="block text-5xl font-black mb-2 tracking-tighter">0.0</span>
 <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">Compliance Error</p>
 <p class="text-xs text-gray-300 leading-relaxed">内置合规检测节点，上线至今未出现一例敏感词或政策性违规问题。</p>
 </div>
@@ -449,9 +526,9 @@
 <!-- END: Outcomes -->
 <!-- BEGIN: Footer / CTA -->
 <footer class="pt-12 border-t border-futura-border flex flex-col md:flex-row items-center justify-between gap-6">
-<p class="text-sm text-futura-text-light">© 2026 江来 Futura. All rights reserved.</p>
+<p class="text-sm text-futura-text-light">© 2026 江来 Futura. 保留所有权利.</p>
 <a class="inline-flex items-center px-8 py-3 bg-futura-dark text-white text-sm font-bold rounded-full hover:bg-black transition-all group" href="../index.html">
-          Back to Portfolio
+          返回首页
           <svg class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
@@ -461,36 +538,43 @@
 </article>
 <!-- END: Project Content -->
 </main>
+
+<!-- Back to Top Button -->
+<button id="backToTop" class="back-to-top" aria-label="Back to top">
+  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+  </svg>
+</button>
+
 <!-- BEGIN: Navigation Script -->
-<script data-purpose="nav-interaction">window.addEventListener('scroll', () => {
-      const sections = document.querySelectorAll('section, header');
-      const navLinks = document.querySelectorAll('.sticky-sidebar ul a');
-      
-      let current = '';
-      sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (pageYOffset >= sectionTop - 120) {
-          current = section.getAttribute('id');
-        }
-      });
 
-      navLinks.forEach(link => {
-        const dot = link.querySelector('span');
-        link.classList.remove('text-futura-green');
-        link.classList.add('text-futura-text-light');
-        dot.classList.remove('bg-futura-green');
-        dot.classList.add('bg-futura-border');
-
-        if (link.getAttribute('href').includes(current)) {
-          link.classList.add('text-futura-green');
-          link.classList.remove('text-futura-text-light');
-          dot.classList.add('bg-futura-green');
-          dot.classList.remove('bg-futura-border');
-        }
-      });
-    });
 <script>
-    // 页面加载时的过渡动画
+    // 页面语言切换功能
+    let currentLang = 'zh';
+    
+    // 语言数据
+    const langData = {
+        nav: {
+            cases: { zh: '案例 / Cases', en: 'Cases' },
+            method: { zh: '方法论 / Method', en: 'Method' },
+            details: { zh: '项目详情 / Project Details', en: 'Project Details' }
+        },
+        sidebar: {
+            currentProject: { zh: '当前项目', en: 'Current Project' },
+            outline: { zh: '目录', en: 'Outline' },
+            overview: { zh: '概览', en: 'Overview' },
+            framework: { zh: '逻辑框架', en: 'Logic Framework' },
+            solutions: { zh: '方法论', en: 'Methodology' },
+            outcomes: { zh: '成果', en: 'KPI & Outcomes' },
+            collapse: { zh: '收起侧边栏', en: 'Collapse Sidebar' }
+        },
+        footer: {
+            backToHome: { zh: '返回首页', en: 'Back to Home' },
+            copyright: { zh: '© 2026 江来 Futura. 保留所有权利.', en: '© 2026 JL Futura. All rights reserved.' }
+        }
+    };
+    
+    // 页面加载时的过渡动画和语言初始化
     document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('page-enter');
         
@@ -499,11 +583,66 @@
         const navigateToCase = sessionStorage.getItem('navigateToCase');
         
         if (fromPage === 'index' && navigateToCase) {
-            // 清除 session 数据
             sessionStorage.removeItem('fromPage');
             sessionStorage.removeItem('navigateToCase');
         }
+        
+        // 初始化语言切换按钮
+        initLanguageToggle();
     });
+    
+    // 初始化语言切换功能
+    function initLanguageToggle() {
+        const langToggle = document.querySelector('.lang-toggle');
+        if (!langToggle) return;
+        
+        const langBtns = langToggle.querySelectorAll('.lang-btn');
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                if (lang && lang !== currentLang) {
+                    currentLang = lang;
+                    updateLanguage(lang);
+                    
+                    // 更新按钮状态
+                    langBtns.forEach(b => {
+                        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+                    });
+                }
+            });
+        });
+    }
+    
+    // 更新页面语言
+    function updateLanguage(lang) {
+        // 更新所有带有 data-zh 和 data-en 属性的元素
+        document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+            const text = lang === 'zh' ? el.getAttribute('data-zh') : el.getAttribute('data-en');
+            if (text) {
+                el.textContent = text;
+            }
+        });
+        
+        // 更新底部版权信息
+        const copyright = document.querySelector('footer p');
+        if (copyright) {
+            copyright.textContent = langData.footer.copyright[lang];
+        }
+        
+        // 更新返回按钮文本
+        const backBtn = document.querySelector('footer a');
+        if (backBtn) {
+            const textNode = Array.from(backBtn.childNodes).find(node => 
+                node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== ''
+            );
+            if (textNode) {
+                textNode.textContent = ' ' + langData.footer.backToHome[lang] + ' ';
+            }
+        }
+        
+        // 更新页面 html lang 属性
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    }
     
     // 页面卸载时的过渡动画
     window.addEventListener('beforeunload', () => {
@@ -517,7 +656,6 @@
             e.preventDefault();
             const targetPage = link.getAttribute('href');
             
-            // 添加过渡动画
             document.body.classList.add('page-exit');
             
             setTimeout(() => {
@@ -526,12 +664,11 @@
         });
     });
     
-    // 所有包含 index.html 的链接处理（BACK按钮）
+    // 所有包含 index.html 的链接处理（BACK 按钮）
     document.querySelectorAll('a[href*="index.html"]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // 添加过渡动画
             document.body.classList.add('page-exit');
             sessionStorage.setItem('backToIndex', 'true');
             
@@ -550,12 +687,32 @@
             
             if (targetElement) {
                 targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // 更新 URL 但不添加历史记录
                 history.replaceState(null, null, targetId);
             }
         });
     });
+    
+    // 返回顶部按钮功能
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        // 滚动时显示/隐藏按钮
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        // 点击返回顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 </script>
 <!-- END: Navigation Script -->
-</body></html>
+</body>
+</html>

@@ -2,7 +2,7 @@
  * FuturaCV 案例详情页生成器
  * 
  * 使用方法：
- * 1. 在 cases/ 目录下创建案例文档（JSON 格式）
+ * 1. 在 cases/ 目录下创建案例文档（JSON 或 MD 格式）
  * 2. 运行此脚本自动生成 HTML 详情页
  * 3. 生成的文件位于 cases/ 目录
  */
@@ -13,6 +13,135 @@ const path = require('path');
 // 案例数据目录
 const CASES_DIR = path.join(__dirname, '..', 'cases');
 const TEMPLATE_FILE = path.join(__dirname, '..', 'code.html');
+
+/**
+ * 解析MD文件内容
+ * @param {String} mdContent - MD文件内容
+ * @returns {Object} 解析后的案例数据对象
+ */
+function parseMDFile(mdContent) {
+  // 解析YAML frontmatter
+  const frontmatterMatch = mdContent.match(/^---\n([\s\S]*?)\n---\n/);
+  const frontmatter = {};
+  
+  if (frontmatterMatch) {
+    const frontmatterContent = frontmatterMatch[1];
+    const lines = frontmatterContent.split('\n');
+    lines.forEach(line => {
+      // 支持更灵活的匹配，包括带引号的值
+      const match = line.match(/^(\w+):\s*(.+)$/);
+      if (match) {
+        let value = match[2].trim();
+        // 移除可能的引号
+        if ((value.startsWith('"') && value.endsWith('"')) || 
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+        frontmatter[match[1]] = value;
+      }
+    });
+  }
+  
+  // 解析主体内容
+  const bodyContent = mdContent.replace(/^---\n[\s\S]*?\n---\n/, '');
+  const sections = bodyContent.split('\n## ').filter(Boolean);
+  
+  const caseData = {
+    ...frontmatter,
+    caseNumber: parseInt(frontmatter.caseNumber) || 0,
+    frameworkItems: [],
+    methodologyItems: [],
+    kpiMetrics: []
+  };
+  
+  sections.forEach(section => {
+    const lines = section.split('\n').filter(Boolean);
+    const sectionTitle = lines[0].trim();
+    
+    if (sectionTitle === '问题解构与能力映射') {
+      const frameworkItems = [];
+      let currentItem = null;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('### ')) {
+          if (currentItem) {
+            frameworkItems.push(currentItem);
+          }
+          const itemMatch = line.match(/###\s*(.*?)\s*-\s*(.*)/);
+          if (itemMatch) {
+            currentItem = {
+              number: itemMatch[1].trim(),
+              title: itemMatch[2].trim(),
+              description: ''
+            };
+          }
+        } else if (currentItem) {
+          currentItem.description = line;
+        }
+      }
+      if (currentItem) {
+        frameworkItems.push(currentItem);
+      }
+      caseData.frameworkItems = frameworkItems;
+    } else if (sectionTitle === '核心实施方案') {
+      const methodologyItems = [];
+      let currentItem = null;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('### ')) {
+          if (currentItem) {
+            methodologyItems.push(currentItem);
+          }
+          currentItem = {
+            title: line.replace('### ', '').trim(),
+            description: '',
+            tags: []
+          };
+        } else if (line.startsWith('**标签**: ')) {
+          if (currentItem) {
+            currentItem.tags = line.replace('**标签**: ', '').split(', ').map(tag => tag.trim());
+          }
+        } else if (currentItem) {
+          currentItem.description = line;
+        }
+      }
+      if (currentItem) {
+        methodologyItems.push(currentItem);
+      }
+      caseData.methodologyItems = methodologyItems;
+    } else if (sectionTitle === '项目交付成果') {
+      const kpiMetrics = [];
+      let currentMetric = null;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('### ')) {
+          if (currentMetric) {
+            kpiMetrics.push(currentMetric);
+          }
+          const metricMatch = line.match(/###\s*(.*?)\s*-\s*(.*)/);
+          if (metricMatch) {
+            currentMetric = {
+              value: metricMatch[1].trim(),
+              label: metricMatch[2].trim(),
+              description: ''
+            };
+          }
+        } else if (currentMetric) {
+          currentMetric.description = line;
+        }
+      }
+      if (currentMetric) {
+        kpiMetrics.push(currentMetric);
+      }
+      caseData.kpiMetrics = kpiMetrics;
+    }
+  });
+  
+  return caseData;
+}
 
 /**
  * 生成案例详情页 HTML
@@ -144,7 +273,7 @@ function generateCasePage(caseData, template) {
   const projectSelectorHtml = `
 <div class="mb-10">
 <p class="text-[10px] uppercase tracking-[0.2em] text-futura-text-light mb-3 flex items-center">
-      Current Project
+      当前项目 / Current Project
       <span class="material-symbols-outlined text-[12px] ml-1">expand_more</span>
 </p>
 <div class="group cursor-pointer">
@@ -171,10 +300,37 @@ ${projectItems}
   }
   
   // 添加页面过渡动画和交互脚本
-  const scriptEndTag = '</script>\n<!-- END: Navigation Script -->';
-  const newScript = `
+  // 找到整个脚本标签并替换
+  const scriptMatch = html.match(/<script data-purpose="nav-interaction">[\s\S]*?<\/script>\n<!-- END: Navigation Script -->/s);
+  if (scriptMatch) {
+    const newScript = `
 <script>
-    // 页面加载时的过渡动画
+    // 页面语言切换功能
+    let currentLang = 'zh';
+    
+    // 语言数据
+    const langData = {
+        nav: {
+            cases: { zh: '案例 / Cases', en: 'Cases' },
+            method: { zh: '方法论 / Method', en: 'Method' },
+            details: { zh: '项目详情 / Project Details', en: 'Project Details' }
+        },
+        sidebar: {
+            currentProject: { zh: '当前项目', en: 'Current Project' },
+            outline: { zh: '目录', en: 'Outline' },
+            overview: { zh: '概览', en: 'Overview' },
+            framework: { zh: '逻辑框架', en: 'Logic Framework' },
+            solutions: { zh: '方法论', en: 'Methodology' },
+            outcomes: { zh: '成果', en: 'KPI & Outcomes' },
+            collapse: { zh: '收起侧边栏', en: 'Collapse Sidebar' }
+        },
+        footer: {
+            backToHome: { zh: '返回首页', en: 'Back to Home' },
+            copyright: { zh: '© 2026 江来 Futura. 保留所有权利.', en: '© 2026 JL Futura. All rights reserved.' }
+        }
+    };
+    
+    // 页面加载时的过渡动画和语言初始化
     document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('page-enter');
         
@@ -183,11 +339,66 @@ ${projectItems}
         const navigateToCase = sessionStorage.getItem('navigateToCase');
         
         if (fromPage === 'index' && navigateToCase) {
-            // 清除 session 数据
             sessionStorage.removeItem('fromPage');
             sessionStorage.removeItem('navigateToCase');
         }
+        
+        // 初始化语言切换按钮
+        initLanguageToggle();
     });
+    
+    // 初始化语言切换功能
+    function initLanguageToggle() {
+        const langToggle = document.querySelector('.lang-toggle');
+        if (!langToggle) return;
+        
+        const langBtns = langToggle.querySelectorAll('.lang-btn');
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                if (lang && lang !== currentLang) {
+                    currentLang = lang;
+                    updateLanguage(lang);
+                    
+                    // 更新按钮状态
+                    langBtns.forEach(b => {
+                        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+                    });
+                }
+            });
+        });
+    }
+    
+    // 更新页面语言
+    function updateLanguage(lang) {
+        // 更新所有带有 data-zh 和 data-en 属性的元素
+        document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+            const text = lang === 'zh' ? el.getAttribute('data-zh') : el.getAttribute('data-en');
+            if (text) {
+                el.textContent = text;
+            }
+        });
+        
+        // 更新底部版权信息
+        const copyright = document.querySelector('footer p');
+        if (copyright) {
+            copyright.textContent = langData.footer.copyright[lang];
+        }
+        
+        // 更新返回按钮文本
+        const backBtn = document.querySelector('footer a');
+        if (backBtn) {
+            const textNode = Array.from(backBtn.childNodes).find(node => 
+                node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== ''
+            );
+            if (textNode) {
+                textNode.textContent = ' ' + langData.footer.backToHome[lang] + ' ';
+            }
+        }
+        
+        // 更新页面 html lang 属性
+        document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    }
     
     // 页面卸载时的过渡动画
     window.addEventListener('beforeunload', () => {
@@ -201,7 +412,6 @@ ${projectItems}
             e.preventDefault();
             const targetPage = link.getAttribute('href');
             
-            // 添加过渡动画
             document.body.classList.add('page-exit');
             
             setTimeout(() => {
@@ -210,12 +420,11 @@ ${projectItems}
         });
     });
     
-    // 所有包含 index.html 的链接处理（BACK按钮）
+    // 所有包含 index.html 的链接处理（BACK 按钮）
     document.querySelectorAll('a[href*="index.html"]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // 添加过渡动画
             document.body.classList.add('page-exit');
             sessionStorage.setItem('backToIndex', 'true');
             
@@ -234,16 +443,36 @@ ${projectItems}
             
             if (targetElement) {
                 targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // 更新 URL 但不添加历史记录
                 history.replaceState(null, null, targetId);
             }
         });
     });
+    
+    // 返回顶部按钮功能
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        // 滚动时显示/隐藏按钮
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        // 点击返回顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 </script>
 <!-- END: Navigation Script -->`;
-  
-  html = html.replace(scriptEndTag, newScript);
+    
+    html = html.replace(scriptMatch[0], newScript);
+  }
   
   return html;
 }
@@ -268,31 +497,57 @@ function main() {
     console.log('📁 创建案例目录:', CASES_DIR);
   }
   
-  // 读取所有案例数据
-  const caseFiles = fs.readdirSync(CASES_DIR).filter(file => file.endsWith('.json'));
+  // 读取所有案例数据，只读取case-开头的文件
+  const caseFiles = fs.readdirSync(CASES_DIR).filter(file => 
+    (file.endsWith('.json') || file.endsWith('.md')) && 
+    file.startsWith('case-') &&
+    !file.endsWith('.canvas') &&
+    !file.endsWith('_SPEC.md') &&
+    !file.endsWith('_GUIDE.md')
+  );
   
   if (caseFiles.length === 0) {
-    console.log('⚠️️  未找到案例 JSON 文件，请先在 cases/ 目录下创建案例数据文件');
+    console.log('⚠️️  未找到案例文件，请先在 cases/ 目录下创建案例数据文件（JSON 或 MD 格式）');
     return;
   }
   
   console.log(`✅ 找到 ${caseFiles.length} 个案例文件\n`);
   
-  // 读取所有案例数据
-  const allCases = caseFiles.map(file => {
+  // 读取所有案例数据，优先使用JSON文件
+  const caseDataMap = new Map();
+  
+  caseFiles.forEach(file => {
     const filePath = path.join(CASES_DIR, file);
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const content = fs.readFileSync(filePath, 'utf-8');
+    let caseData;
+    
+    if (file.endsWith('.md')) {
+      caseData = parseMDFile(content);
+    } else {
+      caseData = JSON.parse(content);
+    }
+    
+    const id = caseData.id;
+    if (id) {
+      const isJSON = file.endsWith('.json');
+      const existing = caseDataMap.get(id);
+      if (!existing || (isJSON && !existing.isJSON)) {
+        caseDataMap.set(id, { ...caseData, isJSON });
+      }
+    }
+  });
+  
+  const allCases = Array.from(caseDataMap.values()).map(item => {
+    const { isJSON, ...caseData } = item;
+    return caseData;
   });
   
   // 生成每个案例的 HTML
-  caseFiles.forEach((file, index) => {
-    const filePath = path.join(CASES_DIR, file);
-    const caseData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    
+  allCases.forEach((caseData, index) => {
     // 添加所有案例列表到数据中
     caseData.allCases = allCases;
     
-    console.log(`📄 生成案例 ${index + 1}/${caseFiles.length}: ${caseData.projectName}`);
+    console.log(`📄 生成案例 ${index + 1}/${allCases.length}: ${caseData.projectName}`);
     
     const html = generateCasePage(caseData, template);
     

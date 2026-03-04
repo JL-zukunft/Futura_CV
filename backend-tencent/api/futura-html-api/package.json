@@ -7,6 +7,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@cloudbase/node-sdk": "latest"
+    "@cloudbase/node-sdk": "^2.9.1"
   }
 }
